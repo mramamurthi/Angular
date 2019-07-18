@@ -1,0 +1,76 @@
+ng new, generate(component, service), serve Lab 1 - Create a app ng new demo1 1. Routing - No 2. Styling - css
+
+Check the flow and lifecycle
+
+ng generate module helper
+ng generate component helper/app2
+ng generate component helper/app3
+Browser -> augury -> module loading
+change appmodule -> import helpermodule
+Browser -> augury -> module loading
+
+index.html -> app(app.html)/app1(part of root module)
+modify app.html to invoke 
+		<app-app2></app-app2>
+--> give error 
+modify helper.module 
+	exports -> app2component ( exports : [App2Component])
+app2component.html to invoke app3component
+Lab2 - Lazy loading ng new demo2 -> Routing - yes ng g c app2 ng g c app3 change app.component.css -> ( https://www.w3schools.com/html/tryit.asp?filename=tryhtml_layout_float) change app.component.html modify routing module const routes: Routes = [ {path:"app2url",component:App2Component}, {path:"app3url",component:App3Component} ];
+
+@NgModule({
+	  imports: [RouterModule.forRoot(routes,{useHash:true})],
+	  exports: [RouterModule]
+	})
+
+modify app html
+  <ul>
+      <li><a  routerLink="app2url">app2 display</a></li>
+      <li><a routerLink="app3url">app3 display</a></li>
+   </ul>
+
+ <article>
+	 <router-outlet></router-outlet>
+ </article>
+
+create a new module
+ng g module helper
+ng g c helper/app4	
+ng g c helper/app5
+
+
+change helper module to define routes
+	const childroutes: Routes = [
+	  {path:"app4url",component:App4Component},
+	  {path:"app5url",component:App5Component}
+	];
+	
+	 imports: [
+			CommonModule, RouterModule.forChild(childroutes)
+	  ]
+modify routes to include one more path(app-routing.module)
+ {path:"helper", loadChildren:  () => import('./helper/helper.module').then(mod => mod.HelperModule) }
+
+  <li><a routerLink="helper">app4 display</a></li>
+Lab3 - parameterized routes
+
+Create a new module
+ng g m reqres
+ng g c reqres/display
+ng g service reqres/my
+Modify  Service 	
+ constructor(private http:HttpClient) { }
+	
+ getdata(url:string){
+    return this.http.get(url);
+  }
+
+
+display compoent
+1. create button to invoke following function
+ invoke(){
+    this.myserv.getdata("https://reqres.in/api/users?page=1")
+    .subscribe(
+      (respobj)=>{console.log(respobj["data"])},
+      (err)=>{console.log("error");}
+    );   }
